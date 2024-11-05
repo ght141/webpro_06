@@ -38,6 +38,7 @@ app.get("/janken", (req, res) => {
   else if( num==2 ) cpu = 'チョキ';
   else cpu = 'パー';
   // ここに勝敗の判定を入れる
+  plintln/{あなたの勝ち}
   // 今はダミーで人間の勝ちにしておく
   let judgement = '勝ち';
   win += 1;
