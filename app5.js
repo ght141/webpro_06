@@ -18,7 +18,7 @@ app.get("/icon", (req, res) => {
   res.render('icon', { filename:"./public/Apple_logo_black.svg", alt:"Apple Logo"});
 });
 
-app.get("/luck", (req, res) => {
+app.get("/luck", (req, res) => {/////////////////////////////////////
   const num = Math.floor( Math.random() * 6 + 1 );
   let luck = '';
   if( num==1 ) luck = '大吉';
@@ -27,30 +27,92 @@ app.get("/luck", (req, res) => {
   res.render( 'luck', {number:num, luck:luck} );
 });
 
-app.get("/janken", (req, res) => {
-  let hand = req.query.hand;
-  let win = Number( req.query.win );
-  let total = Number( req.query.total );
-  console.log( {hand, win, total});
-  const num = Math.floor( Math.random() * 3 + 1 );
-  let cpu = '';
-  if( num==1 ) cpu = 'グー';
-  else if( num==2 ) cpu = 'チョキ';
-  else cpu = 'パー';
-  // ここに勝敗の判定を入れる
-  plintln/{あなたの勝ち}
-  // 今はダミーで人間の勝ちにしておく
-  let judgement = '勝ち';
-  win += 1;
+app.get("/pokemon", (req, res) => {///////////////////////////
+  let choice = req.query.choice; // ユーザーの選択（ハイパーボール、スーパーボール、モンボ）
+  let win = Number(req.query.win); // 捕まえた数
+  let total = Number(req.query.total); // 試行回数
+  console.log({ choice, win, total });
+
+  // 捕獲確率に基づいた判定
+  let judgement = '';
+  const random = Math.random(); // 0から1までのランダムな値を生成
+
+  // 捕獲確率の設定
+  let winRate = 0;
+  if (choice === 'ハイパーボール') {
+    winRate = 0.75; // ハイパーボールの捕獲確率75%
+  } else if (choice === 'スーパーボール') {
+    winRate = 0.50; // スーパーボールの捕獲確率50%
+  } else if (choice === 'モンスターボール') {
+    winRate = 0.25; // モンスターボールの捕獲確率25%
+  }
+
+  // 捕獲確率に基づいて結果を判定
+  if (random < winRate) {
+    judgement = 'ゲット';
+    win += 1;
+  } else {
+    judgement = '逃げられた';
+  }
   total += 1;
+
+  // 結果表示用オブジェクト
+  const display = {
+    choice: choice,
+    judgement: judgement,
+    win: win,
+    total: total
+  };
+
+  // EJSテンプレートで結果をレンダリング
+  res.render('game', display);
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+
+app.get("/janken", (req, res) => {//////////////////////////////////////
+  let hand = req.query.hand; // ユーザーの手
+  let win = Number(req.query.win); // 勝ち数
+  let total = Number(req.query.total); // 総試合数
+  console.log({ hand, win, total });
+
+  // CPUの手をランダムに選択
+  const num = Math.floor(Math.random() * 3 + 1);
+  let cpu = '';
+  if (num === 1) cpu = 'グー';
+  else if (num === 2) cpu = 'チョキ';
+  else cpu = 'パー';
+
+  // 勝敗の判定
+  let judgement = '';
+  if (
+    (hand === 'グー' && cpu === 'チョキ') ||
+    (hand === 'チョキ' && cpu === 'パー') ||
+    (hand === 'パー' && cpu === 'グー')
+  ) {
+    judgement = '勝ち';
+    win += 1;
+  } else if (hand === cpu) {
+    judgement = '引き分け';
+  } else {
+    judgement = '負け';
+  }
+  total += 1;
+
+  // レンダリング用のオブジェクトを準備
   const display = {
     your: hand,
     cpu: cpu,
     judgement: judgement,
     win: win,
     total: total
-  }
-  res.render( 'janken', display );
+  };
+
+  // レンダリング実行
+  res.render('janken', display);
 });
+
 
 app.listen(8080, () => console.log("Example app listening on port 8080!"));
