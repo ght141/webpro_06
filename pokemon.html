@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ポケモン捕獲ゲーム</title>
+</head>
+<body>
+  <h1>ポケモン捕獲に挑戦！</h1>
+  <form action="/pokemon" method="get">
+    <label>
+      <input type="radio" name="choice" value="ハイパーボール" required> ハイパーボール（ゲット確率75%）
+    </label><br>
+    <label>
+      <input type="radio" name="choice" value="スーパーボール"> スーパーボール（ゲット確率50%）
+    </label><br>
+    <label>
+      <input type="radio" name="choice" value="モンスターボール"> モンスターボール（ゲット確率25%）
+    </label><br><br>
+    
+    <!-- ゲット回数と試行回数を保持 -->
+    <input type="hidden" name="win" value="0">
+    <input type="hidden" name="total" value="0">
+
+    <button type="submit">捕まえる！</button>
+  </form>
+
+  <h2>結果</h2>
+  <p>あなたの選択: <%= choice %></p>
+  <p>結果: <%= judgement %></p>
+  <p>ゲット数: <%= win %> / 試行回数: <%= total %></p>
+</body>
+</html>
