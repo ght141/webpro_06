@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡易掲示板</title>
+</head>
+<body>
+    <div id="app"></div>
+    <script>
+        "use strict";
+
+        const app = document.getElementById("app");
+
+        async function fetchPosts() {
+            const res = await fetch("/posts");
+            const posts = await res.json();
+            app.innerHTML = posts.map(post => `
+                <div>
+                    <p>${post.content} <button onclick="likePost(${post.id})">👍 ${post.likes}</button></p>
+                    <button onclick="editPost(${post.id})">編集</button>
+                    <button onclick="deletePost(${post.id})">削除</button>
+                </div>
+            `).join("");
+        }
+
+        async function likePost(id) {
+            await fetch(`/posts/${id}/like`, { method: "POST" });
+            fetchPosts();
+        }
+
+        async function editPost(id) {
+            const newContent = prompt("新しい内容を入力してください:");
+            if (newContent) {
+                await fetch(`/posts/${id}/edit`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ content: newContent })
+                });
+                fetchPosts();
+            }
+        }
+
+        async function deletePost(id) {
+            await fetch(`/posts/${id}/delete`, { method: "POST" });
+            fetchPosts();
+        }
+
+        fetchPosts();
+    </script>
+</body>
+</html>
